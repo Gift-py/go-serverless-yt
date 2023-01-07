@@ -3,23 +3,23 @@ package main
 import (
 	"os"
 
+	"github.com/Gift-py/go-serverless-yt/pkg/handlers"
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
-	"github.com/aws/aws-sdk-go/session"
-	"gituhb.com/aws/aws-lambda-go/events"
-	"gituhb.com/aws/aws-lambda-go/lambda"
-	//"github.com/Gift-py/go-serverless-yt/handlers"
 )
 
 var (
-	dynaCLient dynamodbiface.DynamoDBAPI
+	dynaClient dynamodbiface.DynamoDBAPI
 )
 
 func main() {
 	region := os.Getenv("AWS_REGION")
-	awsSession, err := session.NewSession(aws.Config{Region: aws.String(region)})
+	awsSession, err := session.NewSession(&aws.Config{
+		Region: aws.String(region)})
 
 	if err != nil {
 		return
@@ -30,7 +30,7 @@ func main() {
 
 }
 
-const tableName = "LambdaInGoUser"
+const tableName = "go-serverless-yt"
 
 func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	switch req.HTTPMethod {
@@ -41,7 +41,7 @@ func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse
 	case "PUT":
 		return handlers.UpdateUser(req, tableName, dynaClient)
 	case "DELETE":
-		return handlers.DeleteUser(req, tableName, dynaCLient)
+		return handlers.DeleteUser(req, tableName, dynaClient)
 	default:
 		return handlers.UnhandledMethod()
 	}
